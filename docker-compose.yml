@@ -1,0 +1,24 @@
+services:
+  autogestor-cache:
+    image: redis:7-alpine
+    container_name: autogestor-cache
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
+  autogestor-queue:
+    image: venatum/bull-board:latest
+    container_name: autogestor-queue
+    ports:
+      - "3001:3000"
+    environment:
+      REDIS_HOST: autogestor-cache
+      REDIS_PORT: 6379
+    depends_on:
+      - autogestor-cache
+    restart: unless-stopped
+
+volumes:
+  redis_data:
